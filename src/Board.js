@@ -136,8 +136,12 @@
       return conflictCounter > 0; 
     },
 
-    hasConflicts: function() {
+    hasStraightConflicts: function() {
       return this.hasAnyColConflicts() || this.hasAnyRowConflicts();
+    },
+
+    hasDiagonalConflicts: function() {
+      return this.hasAnyMajorDiagonalConflicts() || this.hasAnyMinorDiagonalConflicts();
     },
 
     // Major Diagonals - go from top-left to bottom-right
@@ -149,12 +153,17 @@
       var pieces = 0;
       var board = this.rows();
       var numOfRows = this.rows().length;
-      if (column<0 || colum >= numOfRows){
+      if (column<0 || column >= numOfRows){
         return console.log("Nice try jerk");
       }
       for (var currentRow = 0; currentRow < numOfRows; currentRow++) {
-        for (var i = column; i < numOfRows - currentRow; i++) {
-          if (board[currentRow+i][i] === 1) {
+        for (var i = column; i < numOfRows; i++) {
+          var row = currentRow+i-column;
+          var col = i;
+          if (col === numOfRows || row === numOfRows){
+            break;
+          }
+          if (board[row][col] === 1) {
             pieces++;
           }
         }
@@ -169,7 +178,12 @@
 
     // test if any major diagonals on this board contain conflicts
     hasAnyMajorDiagonalConflicts: function() {
-      return false; // fixme
+      var boardSize = this.rows().length;
+      var conflictFound = false;
+      for (var i = 0; i < boardSize; i++) {
+        conflictFound = this.hasMajorDiagonalConflictAt(i) || conflictFound;
+      }
+      return conflictFound;
     },
 
 
@@ -179,14 +193,60 @@
     //
     // test if a specific minor diagonal on this board contains a conflict
     hasMinorDiagonalConflictAt: function(column) {
-      return false; // fixme
-      // no need to call on column 0
+      var hasConflicts = false;
+      var pieces = 0;
+      var board = this.rows();
+      var numOfRows = this.rows().length;
+      if (column<0 || column >= numOfRows){
+        return console.log("Nice try jerk");
+      }
+      /* all changes occur after here */
+      for (var currentRow = 0; currentRow < numOfRows; currentRow++) {
+        for (var i = column; i >= 0; i--) {
+          var row = column+currentRow-i;
+          var col = i;
+          if(col < 0 || row >= numOfRows){
+            break;
+          }
+          if (board[row][col] === 1) {
+            pieces++;
+          }
+        }
+        if (pieces > 1) {
+          hasConflicts = true;
+        }
+        //resetting pieces after complete diagonal
+        pieces = 0;
+      }
+      return hasConflicts;
     },
 
     // test if any minor diagonals on this board contain conflicts
     hasAnyMinorDiagonalConflicts: function() {
-      return false; // fixme
+      var boardSize = this.rows().length;
+      var conflictFound = false;
+      for (var i = 0; i < boardSize; i++) {
+        conflictFound = this.hasMinorDiagonalConflictAt(i) || conflictFound;
+      }
+      return conflictFound;
+    },
+
+    //deep copy a matrix to a new matrix
+    deepCopy: function() {
+      var boardSize = this.rows().length
+      var newMatrix = [];
+      var board = this.rows();
+      for (var i = 0; i<boardSize; i++){
+        newMatrix.push(board[i].slice());
+      }
+      return newMatrix;
     }
+
+
+
+
+
+
 
     /*--------------------  End of Helper Functions  ---------------------*/
 
@@ -202,3 +262,10 @@
   };
 
 }());
+
+var board = new Board({n:3});
+board.togglePiece(0,1);
+board.togglePiece(1,2);
+
+
+
