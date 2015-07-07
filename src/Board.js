@@ -79,12 +79,30 @@
     //
     // test if a specific row on this board contains a conflict
     hasRowConflictAt: function(rowIndex) {
-      return false; // fixme
+      // if there is more than one piece in the row
+      var pieces = 0;
+      var allRows = this.rows();
+      for (var i = 0; i<allRows.length; i++){
+        if (allRows[rowIndex][i]===1){
+          pieces++;
+        }
+      }
+      return pieces > 1;
+
     },
 
     // test if any rows on this board contain conflicts
     hasAnyRowConflicts: function() {
-      return false; // fixme
+      // we want to run hasRowConflictAt on all rows in the board
+      // if any of them are true, return true
+      var conflictCounter = 0;
+      var allRows = this.rows();
+      for (var i = 0; i < allRows.length ; i++){
+        if (this.hasRowConflictAt(i)){
+          conflictCounter++;
+        }
+      }
+      return conflictCounter > 0;
     },
 
 
@@ -94,15 +112,33 @@
     //
     // test if a specific column on this board contains a conflict
     hasColConflictAt: function(colIndex) {
-      return false; // fixme
+      var pieces = 0;
+      var allRows = this.rows();
+
+      for (var i = 0; i < allRows.length; i++) {
+        //check each row at column index
+        if (allRows[i][colIndex] === 1) {
+          pieces++;
+        }
+      }      
+      return pieces > 1;
     },
 
     // test if any columns on this board contain conflicts
     hasAnyColConflicts: function() {
-      return false; // fixme
+      var conflictCounter = 0;
+      var allRows = this.rows();
+      for (var i = 0; i < allRows.length ; i++){
+        if (this.hasColConflictAt(i)){
+          conflictCounter++;
+        }
+      }
+      return conflictCounter > 0; 
     },
 
-
+    hasConflicts: function() {
+      return this.hasAnyColConflicts() || this.hasAnyRowConflicts();
+    },
 
     // Major Diagonals - go from top-left to bottom-right
     // --------------------------------------------------------------
