@@ -184,6 +184,9 @@ window.findNQueensSolution = function(n) {
   }; 
     //  var solution = undefined; //fixme
   checkIndex(newBoard,0,0);
+  if (solutions[0]===undefined){
+    solutions[0] = newBoard.rows();
+  }
 
   console.log('Single solution for ' + n + ' queens:', JSON.stringify(solutions[0]));
   return solutions[0];
